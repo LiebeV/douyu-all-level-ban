@@ -14,7 +14,7 @@
 
 'use strict';
 
-let bannedIds = GM_getValue('bannedIds', '[]');
+let bannedIds = GM_getValue('bannedIds', []);
 
 //尝试获取弹幕区
 async function getBarrageList() {
@@ -24,7 +24,7 @@ async function getBarrageList() {
     while (!ulList) {
         ulList = document.getElementById("js-barrage-list");
 
-        console.log('尝试获取弹幕区...');        
+        console.log('尝试获取弹幕区...');
         if (!ulList) {
             console.log('失败，等待1秒钟再尝试获取');
             await new Promise(resolve => setTimeout(resolve, 1000));
