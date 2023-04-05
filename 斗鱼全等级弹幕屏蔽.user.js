@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         斗鱼高级弹幕屏蔽
+// @name         斗鱼全等级弹幕屏蔽
 // @namespace    https://www.liebev.site
 // @version      0.3
 // @description  douyu斗鱼，高级弹幕屏蔽，突破30级等级屏蔽限制
