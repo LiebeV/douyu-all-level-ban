@@ -152,7 +152,7 @@ async function addId(userIdInput) {
 
 async function showSettings() {
     let message = "当前被您屏蔽的用户ID列表：\n";
-    const idList = GM_getValue('bannedIds');
+    const idList = GM_getValue('bannedIds', []);
     for (let i = 0; i < idList.length; i++) {
         message += `${i + 1}. ${idList[i]}\n`;
     }
@@ -166,7 +166,6 @@ async function showSettings() {
 GM_registerMenuCommand('添加屏蔽用户', showSettings);
 
 (function () {
-    GM_getValue('bannedIds', []);
     rightMO();
     midMO();
 })();
