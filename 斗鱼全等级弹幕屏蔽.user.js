@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         斗鱼全等级弹幕屏蔽
 // @namespace    https://www.liebev.site
-// @version      0.3
+// @version      1.0
 // @description  douyu斗鱼，高级弹幕屏蔽，突破30级等级屏蔽限制
 // @author       LiebeV
 // @license      MIT: Copyright (c) 2023 LiebeV
@@ -14,12 +14,9 @@
 
 'use strict';
 
-//WIP，完全的初级发布版本
-//v0.1 -- 依托答辩
-//v0.2.1 -- 右侧弹幕区屏蔽功能完善
-//v0.3 -- 飘屏区弹幕屏蔽已可以与右侧弹幕区联动
-//已知问题1，弹幕瞬间过多时，rightMO会挂
-//已知问题2，完全相同的弹幕，飘屏区一次只会屏蔽一个（可以使用for QSAll解决）
+// v1.0，解决了无法在飘屏区隐藏所有完全相同的弹幕的问题（但似乎现在会误伤其他没有被屏蔽，但是弹幕相同的水友了）
+// 已知问题，弹幕瞬间过多时，rightMO会挂
+// 更新计划，添加移除id的功能
 
 
 let bannedIds = [];
@@ -28,8 +25,7 @@ let dmCache = [];
 
 //尝试获取弹幕区
 async function getRightList() {
-    console.log('高级弹幕屏蔽初始化成功');
-
+    // console.log('高级弹幕屏蔽初始化成功');
     let ulList;
     let count = 0;
     while (!ulList && count < 20) {
@@ -79,8 +75,12 @@ async function rightCheck(righNode) {
         // console.log("rightcheck:" + danmu);
         if (dmCache.includes(danmu)) {
             const xpath = `//div[contains(text(), "${danmu}")]`;
-            const midDivElement = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-            midDivElement.parentElement.style.display = 'none';
+            // const midDivElement = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+            const snapshotResult = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+            for (let i = 0; i < snapshotResult.snapshotLength; i++) {
+                const midDivElement = snapshotResult.snapshotItem(i);
+                midDivElement.parentElement.style.display = 'none';
+            }
         }
         console.log(`"${userId}" 的发言已被屏蔽!`);
     }
