@@ -2,7 +2,7 @@
 // @name         斗鱼全等级弹幕屏蔽
 // @namespace    https://www.liebev.site
 // @version      1.0
-// @description  douyu斗鱼，高级弹幕屏蔽，突破30级等级屏蔽限制
+// @description  douyu斗鱼，高级弹幕屏蔽，突破30级等级屏蔽限制，房管模拟器
 // @author       LiebeV
 // @license      MIT: Copyright (c) 2023 LiebeV
 // @match        https://www.douyu.com/*
