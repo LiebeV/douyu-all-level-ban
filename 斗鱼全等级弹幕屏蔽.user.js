@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         斗鱼全等级弹幕屏蔽
 // @namespace    https://www.liebev.site
-// @version      1.0
+// @version      1.0.1
 // @description  douyu斗鱼，高级弹幕屏蔽，突破30级等级屏蔽限制，房管模拟器
 // @author       LiebeV
 // @license      MIT: Copyright (c) 2023 LiebeV
@@ -14,12 +14,12 @@
 
 'use strict';
 
-// v1.0，解决了无法在飘屏区隐藏所有完全相同的弹幕的问题（但似乎现在会误伤其他没有被屏蔽，但是弹幕相同的水友了）
+// 更新日志，根据反馈，更改了bannedIds的保留逻辑，现在添加的ID将会在所有直播间保留生效
 // 已知问题，弹幕瞬间过多时，rightMO会挂
 // 更新计划，添加移除id的功能
 
 
-let bannedIds = [];
+let bannedIds = GM_getValue('bannedIds', []);
 const userBannedIds = bannedIds;
 let dmCache = [];
 
