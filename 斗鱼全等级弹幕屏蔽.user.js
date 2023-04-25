@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         斗鱼全等级弹幕屏蔽
 // @namespace    https://www.liebev.site
-// @version      1.1
-// @description  douyu斗鱼，高级弹幕屏蔽，突破30级等级屏蔽限制，房管模拟器
+// @version      1.2
+// @description  douyu斗鱼，高级弹幕屏蔽，突破30级等级屏蔽限制
 // @author       LiebeV
 // @license      MIT: Copyright (c) 2023 LiebeV
 // @match        https://www.douyu.com/*
@@ -14,9 +14,8 @@
 
 "use strict";
 
-// v1.1，更新了代码逻辑。添加了一个“模”按钮，用于取代GM_registerMenuCommand。添加了移除id的功能
-// 已知问题，弹幕瞬间过多时，rightMO会挂（无解）
-// 更新计划，添加快速添加id的功能
+// v1.2，添加了在飘屏区右键弹幕时快速添加id的功能
+// 更新计划，添加在右侧弹幕区快速添加id的功能
 
 let userBannedIds = GM_getValue("bannedIds", []);
 let bannedIds = userBannedIds;
@@ -29,7 +28,7 @@ async function getRightList() {
     let count = 0;
     while (!ulList && count < 20) {
         ulList = document.getElementById("js-barrage-list");
-        console.log("尝试获取弹幕区...");
+        console.log("尝试获取Right弹幕区...");
         if (!ulList) {
             console.log(`失败，等待1秒钟再尝试获取，剩余重试：${20 - count}`);
             await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -106,7 +105,7 @@ async function getMainList() {
     if (!divList) {
         console.log("无法获取飘屏弹幕区，请刷新网页");
     } else {
-        console.log("已获取飘屏弹幕区，准备开启Mutation感知");
+        console.log("已获取飘屏弹幕区，准备开启midMO感知");
         console.log(divList);
     }
     return divList;
@@ -154,7 +153,7 @@ async function addId(userIdInput) {
         const index = bannedIds.indexOf(userIdInput);
         if (index !== -1) {
             bannedIds.splice(index, 1);
-            console.log(`已移除屏蔽用户 ${userIdInput}`);
+            console.log(`已移除屏蔽用户： ${userIdInput}`);
             GM_setValue("bannedIds", bannedIds);
         }
     }
@@ -178,30 +177,37 @@ GM_registerMenuCommand("添加屏蔽用户", showSettings);
 async function menu() {
     await rightMO();
     await midMO();
+    await subadd();
 
     const container = document.querySelector(".ChatToolBar");
     const mnq = document.createElement("div");
     mnq.classList.add("liebevmnq");
-    mnq.style.display = "inline-block";
-    mnq.style.verticalAlign = "middle";
-    mnq.style.width = "18px";
-    mnq.style.height = "18px";
-    mnq.style.marginRight = "8px";
+    Object.assign(mnq.style, {
+        display: "inline-block",
+        verticalAlign: "middle",
+        width: "18px",
+        height: "18px",
+        marginRight: "8px",
+    });
 
     const inner = document.createElement("div");
     inner.classList.add("liebevmnqInner");
-    inner.style.width = "100%";
-    inner.style.height = "100%";
+    Object.assign(inner.style, {
+        width: "100%",
+        height: "100%",
+    });
 
     const btn = document.createElement("div");
     btn.classList.add("liebevmnqBtn");
-    btn.style.position = "relative";
-    btn.style.color = "#fff";
-    btn.style.background = "#bbb";
-    btn.style.borderRadius = "4px";
-    btn.style.cursor = "pointer";
-    btn.style.textAlign = "center";
-    btn.style.userSelect = "none";
+    Object.assign(btn.style, {
+        position: "relative",
+        color: "rgb(255, 255, 255)",
+        background: "rgb(187, 187, 187)",
+        borderRadius: "4px",
+        cursor: "pointer",
+        textAlign: "center",
+        userSelect: "none",
+    });
 
     const moniqi = document.createElement("span");
     moniqi.innerText = "模";
@@ -258,10 +264,11 @@ async function showmenu() {
             padding: "0 0 0 16px",
             height: "206px",
             boxSizing: "border-box",
-            overflowY: "auto",
         });
         const idList = GM_getValue("bannedIds", []);
-        panel.innerText = `${idList.map((id, i) => `${i + 1}. ${id}`).join("\n")}`;
+        panel.innerText = `当前被您屏蔽的用户ID列表：\n${idList
+            .map((id, i) => `${i + 1}. ${id}`)
+            .join("\n")}`;
 
         const input = document.createElement("div");
         input.classList.add("mnqinput");
@@ -298,6 +305,40 @@ async function showmenu() {
         commandmenu.appendChild(input);
         input.appendChild(textInput);
     }
+}
+
+async function subadd() {
+    document.addEventListener("mouseup", function (event) {
+        if (event.button === 2) {
+            setTimeout(() => {
+                const sub = document.querySelector(".danmudiv-32f498");
+                // console.log(sub);
+                const subbtn = document.createElement("div");
+                subbtn.classList.add("subaddbtn");
+                subbtn.innerText = "模--添加id";
+                Object.assign(subbtn.style, {
+                    margin: "2px 40px",
+                    cursor: "crosshair",
+                    position: "relative",
+                    color: "rgb(255, 255, 255)",
+                    background: "rgb(187, 187, 187)",
+                    borderRadius: "20px",
+                    textAlign: "center",
+                });
+                sub.appendChild(subbtn);
+                let Id = document.querySelector(".danmuAuthor-3d7b4a").innerText;
+                subbtn.addEventListener("click", function() {
+                    addId(Id);
+                    subbtn.style.backgroundColor = "green";
+                    subbtn.style.border = "2px solid green";
+                    setTimeout(() => {
+                        subbtn.style.backgroundColor = "rgb(187, 187, 187)";
+                        subbtn.style.border = "none";
+                    }, 500);
+                });
+            }, 100);
+        }
+    });
 }
 
 (function () {
