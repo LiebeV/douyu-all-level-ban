@@ -264,6 +264,7 @@ async function showmenu() {
             padding: "0 0 0 16px",
             height: "206px",
             boxSizing: "border-box",
+            overflowY: 'scroll'
         });
         const idList = GM_getValue("bannedIds", []);
         panel.innerText = `当前被您屏蔽的用户ID列表：\n${idList
